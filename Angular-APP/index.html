@@ -1,0 +1,74 @@
+<!doctype html>
+<html ng-app="index">
+<head>
+<h1>Angular Manga Application</h1>
+</head>
+<body ng-controller="MainCtrl">
+<!--
+<h1>{{hello}}</h1>
+<input type="text" name="input1" ng-model="hello">
+-->
+<h3>Genres:</h3>
+
+<ol>
+
+<li>
+<a href="#" ng-Click="setCurrentGenre(null)">Todos</a>	
+</li>
+
+<li ng-repeat="genre in Genres">
+<a href="#" ng-Click="setCurrentGenre(genre)">{{genre.name}}</a>	
+</li>
+
+</ol>
+
+<h3>Mangas:</h3><h3>Genero Actual: {{CurrentGenre===null? "Todos":CurrentGenre.name}}</h3>
+
+<ol>
+
+<div ng-repeat="manga in Mangas | filter:{GenresN:$scope.CurrentGenre===null?$scope.AllManga:CurrentGenre.name}">
+	<a href="">{{manga.title}}</a>
+	<div>
+		<button type="button" ng-if="!isEditingManga(manga.id)" ng-click="startEditing(manga.id)">Editar</button>
+		<button type="button" ng-if="isEditingManga(manga.id)" ng-click="cancelEditing()">Finalizar</button>
+		<button type="button" ng-click="DeleteMangaById(manga.id)">Eliminar</button>
+	</div>
+
+	<ul>
+		<li ng-repeat="genre in manga.Genres" >
+		<a href="">{{getGenreNameById(genre)}}</a>
+		<button type="button" ng-if="isEditingManga(manga.id)" ng-click="DeleteMangaGenreByMangaByGenreId(manga,genre)">X</button>
+		</li>
+	</ul>
+
+	<div ng-if="isEditingManga(manga.id)">
+		<!--<input type="text" text={{manga.title}}></input>-->
+		<select ng-model="NewGenre" ng-options="y.name for (x,y) in GenresToBeAddedByManga(manga)"></select>
+		<button type="button" ng-click="AddMangaGenreByMangaByGenreId(manga,NewGenre.id)">Agregar</button>
+	</div>
+</div>
+
+</ol>
+
+<button type="button" ng-click="startCreating()">Agregar Manga</button>
+
+<!--
+<div ng-if="isCreatingManga()">
+	<input type="text" ng-model="NewManga">
+	<button type="button" ng-click="AddMangaByTitle(NewManga)">Agregar</button>
+</div>
+-->
+
+<form ng-if="isCreatingManga()" ng-submit="AddMangaByTitle(NewManga);cancelCreating();">
+	<label for="NewMangaTittle">Titulo</label>
+	<input type="text" ng-model="NewManga.title" placeholder="Ingresar Titulo...">
+	<button type="submit">Agregar</button>
+	<button type="button" ng-click="cancelCreating()">Cancelar</button>
+</form>
+
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.1/angular.min.js"></script>
+<script src="app/Controllers/app.js"></script>
+<script src="https://cdn.jsdelivr.net/lodash/4.17.4/lodash.min.js"></script>
+</body>
+
+</html>
