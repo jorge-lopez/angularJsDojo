@@ -1,7 +1,9 @@
 angular.module('index',[
-	]).controller('MainCtrl', function($scope)
+	]).controller('MainCtrl', function($scope,$http)
 	{
 		$scope.hello = "";
+		/*
+		//Hardocding DB
 		$scope.Genres = [
 		{"id": 1, "name": "Action"},
 		{"id": 2, "name": "Drama"},
@@ -33,7 +35,7 @@ angular.module('index',[
 		{"id": 28, "name": "Yaoi"},
 		{"id": 29, "name": "Doujinshi"},
 		{"id": 30, "name": "Harem"},
-		{"id": 31, "name": "Matur	e"},
+		{"id": 31, "name": "Mature"},
 		{"id": 32, "name": "Romance"},
 		{"id": 33, "name": "Shoujo Ai"},
 		{"id": 34, "name": "Sports"},
@@ -53,6 +55,37 @@ angular.module('index',[
 		{"id": 10, "title": "The Gamer","Genres": [1,5,6,7,15,20,21,22], "GenresN": []},
 		{"id": 11, "title": "Tower of God","Genres": [1,2,6,7,15,21,22], "GenresN": []}
 		];
+		*/
+
+		var APIUrl = "https://wgg57rxph3.execute-api.us-west-1.amazonaws.com/prod";
+		var APIGenre = "/mt-manga-genres";
+		var APIManga = "/mt-manga-mangas";
+		var APIMangaGenres = "/mt-manga-mangagenres";
+
+		$scope.Genres = [];
+		$scope.Mangas = [];
+
+		$http.get(APIUrl+APIGenre)
+			.then(function(Genres) {
+				$scope.Genres = Genres.data.Items;
+				return $http.get(APIUrl+APIManga);
+			})
+			.then(function(Mangas) {
+				$scope.Mangas = Mangas.data.Items;
+				PopulateGenresNamesInMangas();
+			});
+
+		function PopulateGenresNamesInMangas()
+		{
+			//Set Genre Name to the array for each genre for each manga, to filter later
+			for(var i = 0; i<($scope.Mangas.length);i++)
+			{
+				for(var j = 0; j<($scope.Mangas[i].Genres.length);j++)
+				{
+					$scope.Mangas[i].GenresN.push(getGenreNameById($scope.Mangas[i].Genres[j]));
+				}
+			}
+		}
 
 		function getGenreNameById(GenreId)
 		{
@@ -64,24 +97,6 @@ angular.module('index',[
 			return "";
 			//return "YOLOSWAG";
 		}
-
-		//Set Genre Name to the array for each genre for each manga, to filter later
-		for(var i = 0; i<($scope.Mangas.length);i++)
-		{
-			for(var j = 0; j<($scope.Mangas[i].Genres.length);j++)
-			{
-				$scope.Mangas[i].GenresN.push(getGenreNameById($scope.Mangas[i].Genres[j]));
-			}
-		}
-		/*var auxM;
-		var auxG;
-		for(auxM in $scope.Mangas)
-		{
-			for(auxG in $scope.Mangas[i].Genres)
-			{
-				auxM.GenresN.push(getGenreNameById(auxG));
-			}
-		}*/
 
 		$scope.getGenreNameById = getGenreNameById;
 
