@@ -61,6 +61,7 @@ angular.module('index',[
 		var APIGenre = "/mt-manga-genres";
 		var APIManga = "/mt-manga-mangas";
 		var APIMangaGenres = "/mt-manga-mangagenres";
+		var APIJsonConfig = "application/json";
 
 		$scope.Genres = [];
 		$scope.Mangas = [];
@@ -146,6 +147,14 @@ angular.module('index',[
 			return $scope.isCreating;
 		}
 
+		function UpdateMangaGenresById(MangaId,MangaGenres)
+		{
+			$http.put((APIUrl+APIMangaGenres),({"MangaId" : MangaId, "MangaGenres" : MangaGenres}),APIJsonConfig)
+			.then(function(Genres) {
+				console.log("Generos Actualizados");
+			});
+		}
+
 		function DeleteMangaGenreByMangaByGenreId(Manga,GenreId)
 		{
 			/*
@@ -170,6 +179,7 @@ angular.module('index',[
 			{
 				return g===GenreId;
 			});
+			UpdateMangaGenresById($scope.Mangas[index].id,$scope.Mangas[index].Genres);
 
 		}
 
@@ -181,9 +191,11 @@ angular.module('index',[
 				{
 					$scope.Mangas[i].Genres.push(GenreId);
 					$scope.Mangas[i].GenresN.push(getGenreNameById(GenreId));
+					UpdateMangaGenresById($scope.Mangas[i].id,$scope.Mangas[i].Genres);
 					break;
 				}
 			}
+			
 		}
 
 		function GenresToBeAddedByManga(Manga)
@@ -219,21 +231,25 @@ angular.module('index',[
 			}
 			return res;
 		}
-		/*
-		function AddMangaByTitle(MangaTittle)
-		{
-			 $scope.Mangas.push({"id": GetLastMangaId()+1, "title": MangaTittle, "Genres": [], "GenresN": []});
-		}
-		*/
 
 		function AddMangaByTitle(Manga)
 		{
-			 $scope.Mangas.push({"id": GetLastMangaId()+1, "title": Manga.title, "Genres": [], "GenresN": []});
+			 var index =  GetLastMangaId()+1;
+			 $scope.Mangas.push({"id": index, "title": Manga.title, "Genres": [], "GenresN": []});
 			 if($scope.CurrentGenre !== null)
 			 {
 			 	$scope.Mangas[$scope.Mangas.length-1].Genres.push($scope.CurrentGenre.id);
 				$scope.Mangas[$scope.Mangas.length-1].GenresN.push($scope.CurrentGenre.name);
-			 }
+			 }			 
+
+			$http.post((APIUrl+APIManga),({
+					"MangaId" : $scope.Mangas[$scope.Mangas.length-1].id,
+					"MangaTitle" : $scope.Mangas[$scope.Mangas.length-1].title,
+					"MangaGenres" : $scope.Mangas[$scope.Mangas.length-1].Genres
+				}),APIJsonConfig)
+			.then(function(Manga) {
+				console.log("Manga Agregado");
+			});
 			 //$scope.isCreating = false;
 		}
 		/* the ._ stands for the instance of the lodash library class*/
@@ -256,6 +272,10 @@ angular.module('index',[
 			});
 
 			$scope.Mangas.splice(index,1);
+			$http.delete((APIUrl+APIManga)+"?MangaId="+MangaId,APIJsonConfig)
+			.then(function(Manga) {
+				console.log("Manga Eliminado");
+			});
 		}
 
 		/*
