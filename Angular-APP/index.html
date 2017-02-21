@@ -1,67 +1,80 @@
 <!doctype html>
 <html ng-app="index">
 <head>
-    <h1>Angular Manga Application</h1>
+    <link rel="stylesheet" href="app/assets/css/normalize.css">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" href="app/assets/css/eggly.css">
+    <link rel="stylesheet" href="app/assets/css/animations.css">
 </head>
 <body ng-controller="MainCtrl">
     <!--
     <h1>{{hello}}</h1>
     <input type="text" name="input1" ng-model="hello">
     -->
+<div class="container-fluid">  
+<div class="row">
+<div class="col-sm-3 col-md-2 sidebar">  
+<h1>Angular Manga Application</h1>     
     <h3>Genres:</h3>
 
     <ol>
         <li>
             <a href="#" ng-Click="setCurrentGenre(null)">Todos</a>	
         </li>
-
         <li ng-repeat="genre in Genres">
-            <a href="#" ng-Click="setCurrentGenre(genre)">{{genre.name}}</a>	
+            <div ng-class="{active: isActiveGenre(genre)}">
+               <a href="#" ng-Click="setCurrentGenre(genre)">{{genre.name}}</a>	
+            </div>
         </li>
     </ol>
 
+</div>
+
+<div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
     <h3>Mangas:</h3><h3>Genero Actual: {{CurrentGenre===null? "Todos":CurrentGenre.name}}</h3>
 
-    <ol>
+    <ol >
         <div ng-repeat="manga in Mangas | filter:{GenresN:$scope.CurrentGenre===null?$scope.AllManga:CurrentGenre.name}">
             <a href="">{{manga.title}}</a>
             <div>
-                <button type="button" ng-if="!isEditingManga(manga.id)" ng-click="startEditing(manga.id)">Editar</button>
-                <button type="button" ng-if="isEditingManga(manga.id)" ng-click="cancelEditing()">Finalizar</button>
-                <button type="button" ng-click="DeleteMangaById(manga.id)">Eliminar</button>
+                <button type="button" class="glyphicon glyphicon-pencil" ng-if="!isEditingManga(manga.id)" ng-click="startEditing(manga.id)">Editar</button>
+                <button type="button" class="glyphicon glyphicon-ok-sign"ng-if="isEditingManga(manga.id)" ng-click="cancelEditing()">Finalizar</button>
+                <button type="button" class="glyphicon glyphicon-remove-sign" ng-click="DeleteMangaById(manga.id)">Eliminar</button>
             </div>
 
             <ul>
                 <li ng-repeat="genre in manga.Genres" >
                 <a href="">{{getGenreNameById(genre)}}</a>
-                <button type="button" ng-if="isEditingManga(manga.id)" ng-click="DeleteMangaGenreByMangaByGenreId(manga,genre)">X</button>
+                <button type="button" class="glyphicon glyphicon-minus-sign" ng-if="isEditingManga(manga.id)" ng-click="DeleteMangaGenreByMangaByGenreId(manga,genre)"></button>
                 </li>
             </ul>
 
             <div ng-if="isEditingManga(manga.id)">
                 <!--<input type="text" text={{manga.title}}></input>-->
                 <select ng-model="NewGenre" ng-options="y.name for (x,y) in GenresToBeAddedByManga(manga)"></select>
-                <button type="button" ng-click="AddMangaGenreByMangaByGenreId(manga,NewGenre.id)">Agregar</button>
+                <button type="button" class="glyphicon glyphicon-plus-sign" ng-click="AddMangaGenreByMangaByGenreId(manga,NewGenre.id)">Agregar</button>
             </div>
         </div>
     </ol>
 
-    <button type="button" ng-click="startCreating()">Agregar Manga</button>
+    <button type="button" class="glyphicon glyphicon-plus-sign" ng-click="startCreating()">Agregar Manga</button>
 
+    <form ng-if="isCreatingManga()" ng-submit="AddMangaByTitle(NewManga);cancelCreating();">
+        <label for="NewMangaTittle">Titulo</label>
+        <input type="text" ng-model="NewManga.title" placeholder="Ingresar Titulo...">
+        <button type="submit" class = "glyphicon glyphicon-ok-sign">Agregar</button>
+        <button type="button" class = "glyphicon glyphicon-remove-sign" ng-click="cancelCreating()">Cancelar</button>
+    </form>
+</div>
+</div>
+</div>    
     <!--
     <div ng-if="isCreatingManga()">
         <input type="text" ng-model="NewManga">
         <button type="button" ng-click="AddMangaByTitle(NewManga)">Agregar</button>
     </div>
     -->
-
-    <form ng-if="isCreatingManga()" ng-submit="AddMangaByTitle(NewManga);cancelCreating();">
-        <label for="NewMangaTittle">Titulo</label>
-        <input type="text" ng-model="NewManga.title" placeholder="Ingresar Titulo...">
-        <button type="submit">Agregar</button>
-        <button type="button" ng-click="cancelCreating()">Cancelar</button>
-    </form>
-
+    <script src="//netdna.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.1/angular.min.js"></script>
     <script src="app/Controllers/app.js"></script>
     <script src="https://cdn.jsdelivr.net/lodash/4.17.4/lodash.min.js"></script>

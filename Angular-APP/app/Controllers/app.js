@@ -109,6 +109,15 @@ angular.module('index',[
 			$scope.CurrentGenre = Genre;
 		}
 
+		function isActiveGenre(Genre)
+		{
+		    if($scope.CurrentGenre != null)
+			{
+				return $scope.CurrentGenre.id === Genre.id? true : false;
+			}
+			return false;
+		}
+
 		$scope.setCurrentGenre = setCurrentGenre;
 
 		$scope.isCreating = false;
@@ -247,7 +256,8 @@ angular.module('index',[
 					"MangaTitle" : $scope.Mangas[$scope.Mangas.length-1].title,
 					"MangaGenres" : $scope.Mangas[$scope.Mangas.length-1].Genres
 				}),APIJsonConfig)
-			.then(function(Manga) {
+			.then(function(Manga) 
+			{
 				console.log("Manga Agregado");
 			});
 			 //$scope.isCreating = false;
@@ -266,10 +276,11 @@ angular.module('index',[
 			}*/
 
 			var index = _.findIndex($scope.Mangas,
-			function(m)
-			{
-				return m.id===MangaId;
-			});
+				function(m)
+				{
+					return m.id===MangaId;
+				}
+			);
 
 			$scope.Mangas.splice(index,1);
 			$http.delete((APIUrl+APIManga)+"?MangaId="+MangaId,APIJsonConfig)
@@ -299,7 +310,7 @@ angular.module('index',[
 		$scope.GenresToBeAddedByManga = GenresToBeAddedByManga;
 		$scope.AddMangaByTitle = AddMangaByTitle;
 		$scope.DeleteMangaById = DeleteMangaById;
-
+		$scope.isActiveGenre = isActiveGenre;
 
 	})
 ;
